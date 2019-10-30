@@ -105,7 +105,7 @@ class BackupWindow(Gtk.Window):
                                                 stdout = subprocess.DEVNULL)
             returncode = self.backup_proc.wait()
             self.backup_finished(returncode)
-        subprocess.call(["/usr/bin/xdg-screensaver", "suspend", str(self.window_id)])
+        subprocess.run(["/usr/bin/xdg-screensaver", "suspend", str(self.window_id)])
         self.backup_thread = threading.Thread(target=run_backup_thread)
         self.backup_thread.start()
         self.ok_button.hide()
@@ -116,7 +116,7 @@ class BackupWindow(Gtk.Window):
         self.close_button.show()
         self.cancel_button.hide()
         self.close_button.grab_focus()
-        subprocess.call(["/usr/bin/xdg-screensaver", "resume", str(self.window_id)])
+        subprocess.run(["/usr/bin/xdg-screensaver", "resume", str(self.window_id)])
         if backup_returncode != 0:
             self.label.set_label("<b>Warning</b>\n\nBackup did <b>not</b> finish successfully.")
             print("Warning: Binky backup did *not* finish successfully.")
