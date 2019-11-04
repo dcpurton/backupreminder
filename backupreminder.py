@@ -105,7 +105,7 @@ class BackupWindow(Gtk.Window):
                                                 stdout = subprocess.DEVNULL)
             returncode = self.backup_proc.wait()
             self.backup_finished(returncode)
-        subprocess.run(["/usr/bin/xdg-screensaver", "suspend", str(self.window_id)])
+        self.suspend_screensaver()
         self.backup_thread = threading.Thread(target=run_backup_thread)
         self.backup_thread.start()
         self.ok_button.hide()
@@ -114,9 +114,9 @@ class BackupWindow(Gtk.Window):
     
     def backup_finished(self, backup_returncode):
         self.close_button.show()
-        self.cancel_button.hide()
         self.close_button.grab_focus()
-        subprocess.run(["/usr/bin/xdg-screensaver", "resume", str(self.window_id)])
+        self.cancel_button.hide()
+        self.resume_screensaver()
         if backup_returncode != 0:
             self.label.set_label("<b>Warning</b>\n\nBackup did <b>not</b> finish successfully.")
             print("Warning: Binky backup did *not* finish successfully.")
@@ -148,6 +148,38 @@ class BackupWindow(Gtk.Window):
                 return False
         else:
             return True
+
+    def suspend_screensaver(self):
+        try:
+            result = subprocess.run(["/usr/bin/xset", "q"], stdout = subprocess.PIPE, check = True)
+            try:
+                result = subprocess.run(["/usr/bin/sed",
+                                         "/^Screen Saver:/,/^[^ ]/ { s/.*timeout: *\([0-9]*\).*/\\1/; t }; d"],
+                                        stdout = subprocess.PIPE, input = result.stdout, check = True)
+                self.screensaver_timeout = result.stdout.decode("utf-8").rstrip()
+                try:
+                    subprocess.run(["/usr/bin/xset", "s", "off"], check = True)
+                except CalledProcessError as e:
+                    print("Warning: Failed to suspend screen saver.")
+                    if output != None:
+                        print(e.output.decode("utf-8"))
+            except CalledProcessError as e:
+                print("Warning: Failed to find screen saver timeout.")
+                if output != None:
+                    print(e.output.decode("utf-8"))
+        except CalledProcessError as e:
+            print("Warning: Failed to query X preferences.")
+            if output != None:
+                print(e.output.decode("utf-8"))
+
+    def resume_screensaver(self):
+        if hasattr(self, 'screensaver_timeout'):
+            try:
+                subprocess.run(["/usr/bin/xset", "s", self.screensaver_timeout], check = True)
+            except CalledProcessError as e:
+                print("Warning: Failed to resume screen saver.")
+                if output != None:
+                    print(e.output.decode("utf-8"))
 
 class  QuitDialog(Gtk.Dialog):
     
