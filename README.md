@@ -8,7 +8,9 @@ will also inhibit the screen saver to avoid suspending during the backup.
 ## Usage
 
 If you want to modify this for your own use, you'll likely want to change the
-backup command (I use `duply`) and call it each day from a cron job.
+backup command (I use `duply`) as well as the commands to suspend and resume
+the screen saver (I use `xset`). You'll also want to call it each day from a
+cron job.
 
 ## Licence
 
