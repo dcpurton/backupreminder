@@ -18,7 +18,7 @@
 
 import gi
 gi.require_version('Gtk', '3.0')
-from gi.repository import Gtk, Gdk, GdkX11
+from gi.repository import Gtk, Gdk, GdkX11, GLib
 
 import threading
 import subprocess
@@ -104,7 +104,7 @@ class BackupWindow(Gtk.Window):
             self.backup_proc = subprocess.Popen(["/usr/bin/duply", "binky", "backup"],
                                                 stdout = subprocess.DEVNULL)
             returncode = self.backup_proc.wait()
-            self.backup_finished(returncode)
+            GLib.idle_add(self.backup_finished, returncode)
         self.backup_thread = threading.Thread(target=run_backup_thread)
         self.backup_thread.start()
         self.ok_button.hide()
