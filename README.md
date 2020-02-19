@@ -2,19 +2,16 @@
 
 A simple application to remind me to run a back up each day.
 
-It has options to cancel the backup or shutdown once the backup is complete. It
-will also inhibit the screen saver to avoid suspending during the backup.
+It has options to cancel the backup or shutdown once the backup is complete.
 
 ## Usage
 
 If you want to modify this for your own use, you'll likely want to change the
-backup command (I use `duply`) as well as the commands to suspend and resume
-the screen saver (I use `xset`). You'll also want to call it each day from a
-cron job.
+backup command (I use `duply`) and call it each day from a cron job.
 
 ## Licence
 
-Copyright 2019 David Purton
+Copyright © 2019 David Purton
 
 This program is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
